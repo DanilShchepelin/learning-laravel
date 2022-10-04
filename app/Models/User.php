@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class User extends Authenticatable
 {
@@ -17,6 +18,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use Sluggable;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +29,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'biography',
+        'slug',
     ];
 
     /**
@@ -48,6 +52,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'year_of_birth' => 'date'
     ];
 
     /**
@@ -58,4 +63,12 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function sluggable(): array {
+        return [
+            'slug' => [
+                'source' => 'name',
+            ],
+        ];
+    }
 }
