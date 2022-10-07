@@ -7,20 +7,26 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-
-/**
- * @mixin IdeHelperCategory
- */
-class Category extends Model
+class Article extends Model
 {
     use HasFactory;
     use Sluggable;
 
     public $timestamps = false;
 
+
     protected $fillable = [
         'title',
-        'description',
+        'text'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'announcement' => 'datetime',
     ];
 
     public function sluggable(): array
@@ -36,8 +42,8 @@ class Category extends Model
     /**
      * @return BelongsToMany
      */
-    public function articles(): BelongsToMany
+    public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Article::class, 'articles_categories');
+        return $this->belongsToMany(Category::class, 'articles_categories');
     }
 }

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('article', function (Blueprint $table) {
+        Schema::create('articles', function (Blueprint $table) {
             $table->id();
 
             $table->text('title');
@@ -26,15 +26,18 @@ return new class extends Migration
 
             $table->text('text');
 
-            $table->foreignId('author_id')->constrained('users');
+            $table->foreignId('author_id')
+                ->constrained('users')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
 
             $table->string('slug')
                 ->index();
         });
 
-        Schema::create('article_category', function (Blueprint $table) {
+        Schema::create('articles_categories', function (Blueprint $table) {
             $table->foreignId('article_id')
-                ->constrained('article');
+                ->constrained('articles');
 
             $table->foreignId('category_id')
                 ->constrained('categories');
@@ -48,7 +51,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('article_category');
-        Schema::dropIfExists('article');
+        Schema::dropIfExists('articles_categories');
+        Schema::dropIfExists('articles');
     }
 };

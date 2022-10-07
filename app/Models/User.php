@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
-use Cviebrock\EloquentSluggable\Sluggable;
 
+
+/**
+ * @mixin IdeHelperUser
+ */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -30,7 +33,6 @@ class User extends Authenticatable
         'email',
         'password',
         'biography',
-        'slug',
     ];
 
     /**
@@ -64,7 +66,8 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
-    public function sluggable(): array {
+    public function sluggable(): array
+    {
         return [
             'slug' => [
                 'source' => 'name',
