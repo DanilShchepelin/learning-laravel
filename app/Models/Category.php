@@ -6,6 +6,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Kalnoy\Nestedset\NodeTrait;
 
 
 /**
@@ -14,7 +15,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Category extends Model
 {
     use HasFactory;
-    use Sluggable;
+    use Sluggable, NodeTrait {
+        NodeTrait::replicate as replicateNode;
+        Sluggable::replicate as replicateSlug;
+    }
 
     public $timestamps = false;
 
@@ -39,5 +43,13 @@ class Category extends Model
     public function articles(): BelongsToMany
     {
         return $this->belongsToMany(Article::class, 'articles_categories');
+    }
+
+    public function replicate(array $except = null): Model|Category
+    {
+        $instance = $this->replicateNode($except);
+        (new SlugService())->slug($instance, true);
+
+        return $instance;
     }
 }

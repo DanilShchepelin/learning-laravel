@@ -3,28 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ArticleController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return Response
+     * @return JsonResponse
      */
-    public function index(): Response
+    public function index(): JsonResponse
     {
-        //
+        return response()->json([
+            'articles' => Article::all(),
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Response
+     * @return JsonResponse
      */
-    public function store(Request $request): Response
+    public function store(Request $request): JsonResponse
     {
         //
     }
@@ -33,9 +35,9 @@ class ArticleController extends Controller
      * Display the specified resource.
      *
      * @param Article $article
-     * @return Response
+     * @return JsonResponse
      */
-    public function show(Article $article): Response
+    public function show(Article $article): JsonResponse
     {
         //
     }
@@ -45,9 +47,9 @@ class ArticleController extends Controller
      *
      * @param Request $request
      * @param Article $article
-     * @return Response
+     * @return JsonResponse
      */
-    public function update(Request $request, Article $article): Response
+    public function update(Request $request, Article $article): JsonResponse
     {
         //
     }
@@ -56,9 +58,9 @@ class ArticleController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Article $article
-     * @return Response
+     * @return JsonResponse
      */
-    public function destroy(Article $article): Response
+    public function destroy(Article $article): JsonJsonResponse
     {
         //
     }

@@ -20,12 +20,13 @@ class ArtileCategoryRelationSeeder extends Seeder
         $categories_id = Category::all()->pluck('id');
 
         Article::all()->each(function (Article $article) use ($categories_id) {
-            $category_id = $categories_id->random();
+
             for (
                 $i = 0, $iterations_limit = rand(0, 2);
                 $i <= $iterations_limit;
                 $i++
             ) {
+                $category_id = $categories_id->random();
                 $article->categories()->attach($category_id);
             }
         });
