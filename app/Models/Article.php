@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Filterable;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Article extends Model
 {
     use HasFactory;
+    use Filterable;
     use Sluggable;
 
     public $timestamps = false;
@@ -20,7 +23,8 @@ class Article extends Model
 
     protected $fillable = [
         'title',
-        'text'
+        'text',
+        'author_id'
     ];
 
     /**
@@ -48,5 +52,20 @@ class Article extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'articles_categories');
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id');
+    }
+
+    /**
+     * @param $value
+     * @param null $field
+     * @return Article|null
+     */
+    public function resolveRouteBinding($value, $field = null): ?Article
+    {
+        return $this->where('slug', $value)->orWhere('id', $value)->first();
     }
 }

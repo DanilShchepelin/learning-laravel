@@ -5,21 +5,30 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
+     * @param Request $request
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $user = User::select('id', 'name')->paginate(5);
+        $per_page = $request->get('per_page', 5);
+        $name = $request->get('name', null);
+
+        if (empty($name)) {
+            $user = User::paginate($per_page);
+        } else {
+            $user = User::where('name', 'like', "%{$name}%")->paginate($per_page);
+        }
+
 
         return response()->json([
             'users' => $user
-        ]);
+        ], 200);
     }
 
     /**
@@ -35,7 +44,7 @@ class UserController extends Controller
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -51,13 +60,13 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param $slug
+     * @param User $user
      * @return JsonResponse
      */
-    public function show($slug): JsonResponse
+    public function show(User $user): JsonResponse
     {
         return response()->json([
-            'users' => User::all()->where('slug', '=', $slug)
+            'users' => $user
         ]);
     }
 

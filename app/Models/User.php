@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -71,5 +72,20 @@ class User extends Authenticatable
                 'source' => 'name',
             ],
         ];
+    }
+
+    public function articles(): HasMany
+    {
+        return $this->hasMany(Article::class, 'author_id');
+    }
+
+    /**
+     * @param $value
+     * @param null $field
+     * @return User|null
+     */
+    public function resolveRouteBinding($value, $field = null): ?User
+    {
+        return $this->where('slug', $value)->orWhere('id', $value)->first();
     }
 }

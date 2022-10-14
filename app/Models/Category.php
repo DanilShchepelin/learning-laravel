@@ -52,4 +52,14 @@ class Category extends Model
 
         return $instance;
     }
+
+    /**
+     * @param $value
+     * @param null $field
+     * @return Category|null
+     */
+    public function resolveRouteBinding($value, $field = null): ?Category
+    {
+        return $this->where('slug', $value)->orWhere('id', $value)->first();
+    }
 }
