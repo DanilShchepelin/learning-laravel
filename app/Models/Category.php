@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SearchByIdOrSlug;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +17,7 @@ use Kalnoy\Nestedset\NodeTrait;
 class Category extends Model
 {
     use HasFactory;
+    use SearchByIdOrSlug;
     use Sluggable, NodeTrait {
         NodeTrait::replicate as replicateNode;
         Sluggable::replicate as replicateSlug;
@@ -33,6 +36,7 @@ class Category extends Model
             'slug' => [
                 'source' => 'title',
                 'unique' => true,
+                'onUpdate' => true,
             ]
         ];
     }
@@ -45,21 +49,17 @@ class Category extends Model
         return $this->belongsToMany(Article::class, 'articles_categories');
     }
 
+    /**
+     * Совместимость двух пакетов Sluggable и NodeTrait
+     *
+     * @param array|null $except
+     * @return Model|Category
+     */
     public function replicate(array $except = null): Model|Category
     {
         $instance = $this->replicateNode($except);
         (new SlugService())->slug($instance, true);
 
         return $instance;
-    }
-
-    /**
-     * @param $value
-     * @param null $field
-     * @return Category|null
-     */
-    public function resolveRouteBinding($value, $field = null): ?Category
-    {
-        return $this->where('slug', $value)->orWhere('id', $value)->first();
     }
 }

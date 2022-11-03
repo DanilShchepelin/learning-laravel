@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,23 +14,15 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      * @param Request $request
-     * @return JsonResponse
+     * @return UserCollection
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): UserCollection
     {
-        $per_page = $request->get('per_page', 5);
-        $name = $request->get('name', null);
+        $users = User::query()
+            ->findAuthor($request->query('name'))
+            ->paginate($request->query('per_page', 5));
 
-        if (empty($name)) {
-            $user = User::paginate($per_page);
-        } else {
-            $user = User::where('name', 'like', "%{$name}%")->paginate($per_page);
-        }
-
-
-        return response()->json([
-            'users' => $user
-        ], 200);
+        return new UserCollection($users);
     }
 
     /**
@@ -48,16 +42,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return JsonResponse
-     */
-    public function create(): JsonResponse
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param User $user
@@ -71,17 +55,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param User $user
-     * @return JsonResponse
-     */
-    public function edit(User $user): JsonResponse
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param StoreUserRequest $request
@@ -90,7 +63,13 @@ class UserController extends Controller
      */
     public function update(StoreUserRequest $request, User $user): JsonResponse
     {
-        $user->update($request->all());
+        $validated = $request->validate([
+            'name' => 'string',
+            'email' => 'required',
+            'password' => 'required',
+            'biography' => 'required'
+        ]);
+        $user->update($validated);
 
         return response()->json([
             'message' => 'User updated successfully',

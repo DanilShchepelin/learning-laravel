@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Resources\ArticleCollection;
+use App\Http\Resources\ArticleResource;
+use App\Http\Resources\Resource;
 use App\Models\Article;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
@@ -12,76 +16,31 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      * @param Request $request
-     * @return JsonResponse
+     * @return ArticleCollection
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): ArticleCollection
     {
-        $per_page = $request->get('per_page', 5);
 
-        $data = $request->all();
+        $articles = Article::query()
+            ->filtering($request)
+            ->sorting($request->query('sort'))
+            ->addRelations($request->query('with'))
+            ->paginate($request->query('per_page', 5));
 
-        $query = Article::query();
-
-        if (isset($data['title'])) {
-            $query->where('title', 'like', "%{$data['title']}%");
-        }
-
-        if (isset($data['author'])) {
-            $query
-                ->where('author_id', $data['author']);
-//                ->with([
-//                    'users' => function ($query) {
-//                        $query->select('users.id', 'users.name');
-//                    }
-//                ])
-//                ->with('author:id,name')
-//                ->whereHas('author', function ($query) use ($data) {
-//                    return $query->where('id', $data['author']);
-//                });
-        }
-
-        if (isset($data['category_id'])) {
-            $query->with('categories')->whereHas('categories', function ($query) use ($data) {
-                return $query->where('category_id', $data['category_id']);
-            });
-        }
-
-        $articles = $query->paginate($per_page);
-
-
-        return response()->json([
-            $articles
-        ]);
+        return new ArticleCollection($articles);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreArticleRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreArticleRequest $request): JsonResponse
     {
-        $request->validate([
-            'title' => 'required|max:255',
-            'text' => 'required',
-            'author_id' => 'required'
-        ]);
-
-        $article = Article::create($request->all());
-
-        $categories_id = Category::all()->pluck('id');
-
-        $article = Article::find($article['id']);
-
-        for (
-            $i = 0, $iterations_limit = rand(0, 2);
-            $i <= $iterations_limit;
-            $i++
-        ) {
-            $category_id = $categories_id->random();
-            $article->categories()->attach($category_id);
-        }
+        $article = Article::create($request->validated());
+        $categories = $request->input('categories');
+        $article->categories()->attach($categories);
 
         return response()->json([
             'message' => 'Article created successfully',
@@ -93,13 +52,20 @@ class ArticleController extends Controller
      * Display the specified resource.
      *
      * @param Article $article
-     * @return JsonResponse
+     * @param Request $request
+     * @return ArticleResource
      */
-    public function show(Article $article): JsonResponse
+    public function show(Article $article, Request $request): ArticleResource
     {
-        return response()->json([
-            'article' => $article
-        ]);
+        // todo добавить валидации с описанием возможных параметров. Например with
+
+        $with = $request->query('with');
+        if (!empty($with)) {
+            $article->load($with);
+        }
+
+//        return new ArticleResource($article, Resource::FULL_FORM);
+        return new ArticleResource($article);
     }
 
     /**
@@ -111,7 +77,13 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article): JsonResponse
     {
-        $article->update($request->all());
+        $validated = $request->validate([
+            'title' => 'string',
+            'text' => 'string',
+            'author_id' => 'exists:App\Models\User,id'
+        ]);
+
+        $article->update($validated);
 
         return response()->json([
             'message' => 'Article updated successfully',
@@ -131,6 +103,6 @@ class ArticleController extends Controller
 
         return response()->json([
             'message' => 'Article deleted successfully'
-        ], 200);
+        ], 204);
     }
 }

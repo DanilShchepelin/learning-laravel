@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,32 +16,22 @@ class CategoryController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $per_page = $request->get('per_page', 5);
-        $categories = Category::paginate($per_page);
-
         return response()->json([
-            'categories' => $categories
+            Category::paginate($request->get('per_page', 5))
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreCategoryRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $request->validate([
-            'title' => 'required|max:255',
-            'description' => 'required',
-        ]);
-
-        $category = Category::create($request->all());
-
         return response()->json([
             'message' => 'Category created successfully',
-            'category' => $category
+            'category' => Category::create($request->all())
         ], 201);
     }
 
@@ -66,7 +57,12 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category): JsonResponse
     {
-        $category->update($request->all());
+        $validated = $request->validate([
+            'title' => 'string',
+            'description' => 'string',
+        ]);
+
+        $category->update($validated);
 
         return response()->json([
             'message' => 'Category updated successfully',

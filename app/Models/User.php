@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\SearchByIdOrSlug;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,6 +25,7 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
     use Sluggable;
+    use SearchByIdOrSlug;
 
     /**
      * The attributes that are mass assignable.
@@ -70,6 +73,8 @@ class User extends Authenticatable
         return [
             'slug' => [
                 'source' => 'name',
+                'unique' => true,
+                'onUpdate' => true,
             ],
         ];
     }
@@ -80,12 +85,16 @@ class User extends Authenticatable
     }
 
     /**
-     * @param $value
-     * @param null $field
-     * @return User|null
+     * @param Builder $query
+     * @param string|null $name
+     * @return Builder
      */
-    public function resolveRouteBinding($value, $field = null): ?User
+    public function scopeFindAuthor(Builder $query, ?string $name): Builder
     {
-        return $this->where('slug', $value)->orWhere('id', $value)->first();
+        if (!empty($name)) {
+            $query->where('name', 'like', "%{$name}%");
+        }
+
+        return $query;
     }
 }
