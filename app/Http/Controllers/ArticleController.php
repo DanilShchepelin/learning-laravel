@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\Article\ShowArticleRequest;
+use App\Http\Requests\Article\StoreArticleRequest;
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
-use App\Http\Resources\Resource;
 use App\Models\Article;
-use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -38,6 +37,7 @@ class ArticleController extends Controller
      */
     public function store(StoreArticleRequest $request): JsonResponse
     {
+        // todo validated
         $article = Article::create($request->validated());
         $categories = $request->input('categories');
         $article->categories()->attach($categories);
@@ -52,10 +52,10 @@ class ArticleController extends Controller
      * Display the specified resource.
      *
      * @param Article $article
-     * @param Request $request
+     * @param ShowArticleRequest $request
      * @return ArticleResource
      */
-    public function show(Article $article, Request $request): ArticleResource
+    public function show(Article $article, ShowArticleRequest $request): ArticleResource
     {
         // todo добавить валидации с описанием возможных параметров. Например with
 
