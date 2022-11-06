@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -57,19 +58,13 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param StoreUserRequest $request
+     * @param UpdateUserRequest $request
      * @param User $user
      * @return JsonResponse
      */
-    public function update(StoreUserRequest $request, User $user): JsonResponse
+    public function update(UpdateUserRequest $request, User $user): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'string',
-            'email' => 'required',
-            'password' => 'required',
-            'biography' => 'required'
-        ]);
-        $user->update($validated);
+        $user->update($request->validated());
 
         return response()->json([
             'message' => 'User updated successfully',

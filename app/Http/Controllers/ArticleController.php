@@ -59,7 +59,7 @@ class ArticleController extends Controller
     {
         // todo добавить валидации с описанием возможных параметров. Например with
 
-        $with = $request->query('with');
+        $with = $request->validated()->query('with');
         if (!empty($with)) {
             $article->load($with);
         }
@@ -71,19 +71,13 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param UpdateArticleRequest $request
      * @param Article $article
      * @return JsonResponse
      */
-    public function update(Request $request, Article $article): JsonResponse
+    public function update(UpdateArticleRequest $request, Article $article): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'string',
-            'text' => 'string',
-            'author_id' => 'exists:App\Models\User,id'
-        ]);
-
-        $article->update($validated);
+        $article->update($request->validated());
 
         return response()->json([
             'message' => 'Article updated successfully',
