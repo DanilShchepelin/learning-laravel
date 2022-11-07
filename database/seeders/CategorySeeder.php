@@ -24,7 +24,5 @@ class CategorySeeder extends Seeder
         Category::factory(3)->create([
             'parent_id' => 3,
         ]);
-
-
     }
 }

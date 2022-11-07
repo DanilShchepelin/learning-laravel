@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,14 +28,23 @@ class CategoryController extends Controller
      *
      * @param StoreCategoryRequest $request
      * @return JsonResponse
+     * @throws HttpClientException
      */
     public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $category = Category::create($request->validated());
+        $parent_id = $request->validated('parent_id');
+        if (!empty($parent_id)) {
+            $parent = Category::find($parent_id);
+            if (!empty($parent)) {
+                $category = Category::create($request->validated(), $parent);
+            } else {
+                throw new HttpClientException('Не существует родительской категории с ID: ' . $parent_id);
+            }
+        }
 
         return response()->json([
             'message' => 'Category created successfully',
-            'category' => $category
+            'category' => $category ?? Category::create($request->validated())
         ], 201);
     }
 
@@ -57,14 +67,25 @@ class CategoryController extends Controller
      * @param UpdateCategoryRequest $request
      * @param Category $category
      * @return JsonResponse
+     * @throws HttpClientException
      */
     public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $category->update($request->validated());
+//        $category->update($request->validated());
+        $parent_id = $request->validated('parent_id');
+
+        if (!empty($parent_id)) {
+            $parent = Category::find($parent_id);
+            if (!empty($parent)) {
+                $category->update($request->validated());
+            } else {
+                throw new HttpClientException('Не существует родительской категории с ID: ' . $parent_id);
+            }
+        }
 
         return response()->json([
             'message' => 'Category updated successfully',
-            'category' => $category
+            'category' => $category ?? $category->update($request->validated())
         ], 200);
     }
 

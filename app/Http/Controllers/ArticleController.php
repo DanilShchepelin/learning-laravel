@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Article\ShowArticleRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
+use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
@@ -19,7 +20,6 @@ class ArticleController extends Controller
      */
     public function index(Request $request): ArticleCollection
     {
-
         $articles = Article::query()
             ->filtering($request)
             ->sorting($request->query('sort'))
@@ -37,7 +37,6 @@ class ArticleController extends Controller
      */
     public function store(StoreArticleRequest $request): JsonResponse
     {
-        // todo validated
         $article = Article::create($request->validated());
         $categories = $request->input('categories');
         $article->categories()->attach($categories);
@@ -57,14 +56,11 @@ class ArticleController extends Controller
      */
     public function show(Article $article, ShowArticleRequest $request): ArticleResource
     {
-        // todo добавить валидации с описанием возможных параметров. Например with
-
         $with = $request->validated()->query('with');
         if (!empty($with)) {
             $article->load($with);
         }
 
-//        return new ArticleResource($article, Resource::FULL_FORM);
         return new ArticleResource($article);
     }
 
@@ -82,7 +78,7 @@ class ArticleController extends Controller
         return response()->json([
             'message' => 'Article updated successfully',
             'article' => $article
-        ], 200);
+        ]);
     }
 
     /**

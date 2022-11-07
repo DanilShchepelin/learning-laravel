@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\User\StoreUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserCollection;
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,9 +18,12 @@ class UserController extends Controller
      */
     public function index(Request $request): UserCollection
     {
-        $users = User::query()
-            ->findAuthor($request->query('name'))
-            ->paginate($request->query('per_page', 5));
+        /** @var User $users */
+        $users = User::query();
+
+        $users =
+            $users->findAuthor($request->query('name'))
+                ->paginate($request->query('per_page', 5));
 
         return new UserCollection($users);
     }
