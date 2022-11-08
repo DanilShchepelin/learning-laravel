@@ -28,6 +28,12 @@ class Category extends Model
     protected $fillable = [
         'title',
         'description',
+        'parent_id'
+    ];
+
+    protected $hidden = [
+        '_lft',
+        '_rgt'
     ];
 
     public function sluggable(): array

@@ -67,25 +67,25 @@ class CategoryController extends Controller
      * @param UpdateCategoryRequest $request
      * @param Category $category
      * @return JsonResponse
-     * @throws HttpClientException
      */
     public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-//        $category->update($request->validated());
-        $parent_id = $request->validated('parent_id');
+        $category->update($request->validated());
 
-        if (!empty($parent_id)) {
-            $parent = Category::find($parent_id);
-            if (!empty($parent)) {
-                $category->update($request->validated());
-            } else {
-                throw new HttpClientException('Не существует родительской категории с ID: ' . $parent_id);
-            }
-        }
+//        $parent_id = $request->validated('parent_id');
+//
+//        if (!empty($parent_id)) {
+//            $parent = Category::find($parent_id);
+//            if (!empty($parent)) {
+//                $category->update($request->validated());
+//            } else {
+//                throw new HttpClientException('Не существует родительской категории с ID: ' . $parent_id);
+//            }
+//        }
 
         return response()->json([
             'message' => 'Category updated successfully',
-            'category' => $category ?? $category->update($request->validated())
+            'category' => $category
         ], 200);
     }
 

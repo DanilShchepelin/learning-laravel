@@ -8,6 +8,7 @@ use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
+use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -53,12 +54,18 @@ class ArticleController extends Controller
      * @param Article $article
      * @param ShowArticleRequest $request
      * @return ArticleResource
+     * @throws HttpClientException
      */
     public function show(Article $article, ShowArticleRequest $request): ArticleResource
     {
-        $with = $request->validated()->query('with');
+        $with = $request->validated('with');
+
         if (!empty($with)) {
-            $article->load($with);
+            if (!in_array(null, $with)) {
+                $article->load($with);
+            } else {
+                throw new HttpClientException('Параметр with должен быть заполнен');
+            }
         }
 
         return new ArticleResource($article);
