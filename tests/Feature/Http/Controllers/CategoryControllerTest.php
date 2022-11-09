@@ -5,11 +5,12 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @return void
      */
@@ -19,7 +20,17 @@ class CategoryControllerTest extends TestCase
 
         $response = $this->get('/api/categories');
 
-        $response->assertStatus(200);
+        $response
+            ->assertJsonStructure([
+                'data' => [
+                    '*' => [
+                        'id',
+                        'title',
+                        'slug'
+                    ]
+                ]
+            ])
+            ->assertStatus(200);
     }
 
     /**
@@ -31,6 +42,13 @@ class CategoryControllerTest extends TestCase
         $response = $this->get('/api/categories/' . $category->id);
 
         $response
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'title',
+                    'slug'
+                ]
+            ])
             ->assertJsonCount(1)
             ->assertStatus(200);
     }
@@ -54,7 +72,7 @@ class CategoryControllerTest extends TestCase
     {
         $category = Category::factory()->create(['title' => 'Hello']);
 
-        $response = $this->putJson("/api/categories/{$category->id}", ['title' => 'hello2']);
+        $response = $this->put("/api/categories/{$category->id}", ['title' => 'hello2']);
 
         $response
             ->assertJsonFragment(['title' => 'hello2'])
@@ -64,7 +82,7 @@ class CategoryControllerTest extends TestCase
     /**
      * @return void
      */
-    public function testDelete(): void
+    public function testDestroy(): void
     {
         $category = Category::factory()->create();
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
-        $user = User::create($request->all());
+        $user = User::create($request->validated());
 
         return response()->json([
             'message' => 'User created successfully',
@@ -48,13 +49,11 @@ class UserController extends Controller
      * Display the specified resource.
      *
      * @param User $user
-     * @return JsonResponse
+     * @return UserResource
      */
-    public function show(User $user): JsonResponse
+    public function show(User $user): UserResource
     {
-        return response()->json([
-            'users' => $user
-        ]);
+        return new UserResource($user);
     }
 
     /**
@@ -86,6 +85,6 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User deleted successfully'
-        ], 200);
+        ], 204);
     }
 }

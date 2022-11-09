@@ -4,23 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      * @param Request $request
-     * @return JsonResponse
+     * @return AnonymousResourceCollection
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
-        return response()->json([
-            Category::paginate($request->get('per_page', 5))
-        ]);
+        $categories = Category::paginate($request->query('per_page', 5));
+        return CategoryResource::collection($categories);
     }
 
     /**
@@ -52,13 +53,11 @@ class CategoryController extends Controller
      * Display the specified resource.
      *
      * @param Category $category
-     * @return JsonResponse
+     * @return CategoryResource
      */
-    public function show(Category $category): JsonResponse
+    public function show(Category $category): CategoryResource
     {
-        return response()->json([
-            'category' => $category
-        ]);
+        return new CategoryResource($category);
     }
 
     /**
