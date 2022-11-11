@@ -42,8 +42,8 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->make();
 
-        $user = array_merge($user->toArray(), ['password' => 'Passw0rd']);
-
+        $user = $user->toArray();
+        $user['password'] = 'Passw0rd';
         $response = $this->post('/api/users', $user);
 
         $response->assertStatus(201);
