@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Http\Requests\Article\ShowArticleRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
 use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +40,14 @@ class ArticleController extends Controller
      */
     public function store(StoreArticleRequest $request): JsonResponse
     {
+        $user = auth('sanctum')->user();
+
+        if (!$user->tokenCan(Roles::Admin->getName())) {
+            return response()->json([
+                'message' => 'У вас недостаточно прав'
+            ], 403);
+        }
+
         $article = Article::create($request->validated());
         $categories = $request->input('categories');
         $article->categories()->attach($categories);
@@ -80,6 +90,20 @@ class ArticleController extends Controller
      */
     public function update(UpdateArticleRequest $request, Article $article): JsonResponse
     {
+        $user = auth('sanctum')->user();
+
+        if (!$user->tokenCan(Roles::Author->getName())) {
+            return response()->json([
+                'message' => 'У вас недостаточно прав'
+            ], 403);
+        }
+
+        if ($user->id !== $article->author_id) {
+            return response()->json([
+                'message' => 'Вы не являетесь автором статьи'
+            ], 403);
+        }
+
         $article->update($request->validated());
 
         return response()->json([
@@ -96,6 +120,23 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article): JsonResponse
     {
+        $user = auth('sanctum')->user();
+
+        if (!$user->tokenCan(Roles::Author->getName())) {
+            return response()->json([
+                'message' => 'У вас недостаточно прав'
+            ], 403);
+        }
+
+        if ($user->id !== $article->author_id) {
+            return response()->json([
+                'message' => 'Вы не являетесь автором статьи'
+            ], 403);
+        }
+//        if(User::isAuthorOrAdmin($user, $article)) {
+//            $article->delete();
+//        }
+
         $article->delete();
 
         return response()->json([

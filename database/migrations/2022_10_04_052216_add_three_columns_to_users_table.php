@@ -20,7 +20,7 @@ return new class extends Migration
 
             $table->date('year_of_birth')
                 ->after('biography')
-                ->nullable();
+                ->nullable(false);
 
             $table->string('slug')
                 ->after('year_of_birth')

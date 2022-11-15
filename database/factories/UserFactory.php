@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Roles;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -33,7 +34,8 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'profile_photo_path' => $this->faker->imageUrl(),
             'biography' => $this->faker->text(),
-            'year_of_birth' => $this->faker->date()
+            'year_of_birth' => $this->faker->date(),
+            'role' => Roles::Other->getName(),
         ];
     }
 

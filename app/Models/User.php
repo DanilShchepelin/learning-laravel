@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Roles;
 use App\Models\Traits\SearchByIdOrSlug;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Builder;
@@ -47,6 +48,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
+        'is_admin',
         'password',
         'remember_token',
         'two_factor_recovery_codes',
@@ -60,7 +62,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'year_of_birth' => 'date'
+        'year_of_birth' => 'date',
+        'is_admin' => 'boolean'
     ];
 
     /**
@@ -106,4 +109,20 @@ class User extends Authenticatable
 
         return $query;
     }
+
+//    public static function isAuthorOrAdmin($user, $article) {
+//        if (!$user->tokenCan(Roles::Author->getName())) {
+//            return response()->json([
+//                'message' => 'У вас недостаточно прав'
+//            ], 403);
+//        }
+//
+//        if ($user->id !== $article->author_id) {
+//            return response()->json([
+//                'message' => 'Вы не являетесь автором статьи'
+//            ], 403);
+//        }
+//
+//        return true;
+//    }
 }
