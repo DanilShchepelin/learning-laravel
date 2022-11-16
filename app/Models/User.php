@@ -15,12 +15,16 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 
 /**
  * @mixin IdeHelperUser
  */
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens;
     use HasFactory;
@@ -29,6 +33,7 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
     use Sluggable;
     use SearchByIdOrSlug;
+    use InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.
@@ -110,19 +115,11 @@ class User extends Authenticatable
         return $query;
     }
 
-//    public static function isAuthorOrAdmin($user, $article) {
-//        if (!$user->tokenCan(Roles::Author->getName())) {
-//            return response()->json([
-//                'message' => 'У вас недостаточно прав'
-//            ], 403);
-//        }
-//
-//        if ($user->id !== $article->author_id) {
-//            return response()->json([
-//                'message' => 'Вы не являетесь автором статьи'
-//            ], 403);
-//        }
-//
-//        return true;
-//    }
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Manipulations::FIT_CROP, 150, 150)
+            ->nonQueued();
+    }
 }

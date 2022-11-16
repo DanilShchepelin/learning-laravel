@@ -42,7 +42,7 @@ Route::prefix('users')->group(function () {
     Route::get('/', Collection::class);
     Route::get('{user}', Detail::class);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::put('{user}', Update::class);
+        Route::post('{user}', Update::class);
         Route::put('{user}/reset-password', ResetPassword::class);
         Route::delete('{user}', Delete::class);
     });

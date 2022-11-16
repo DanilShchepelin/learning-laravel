@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\File;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -26,7 +27,8 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => 'max:70|string',
             'email' => 'email|unique:users,email',
-            'biography' => 'string'
+            'biography' => 'string',
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ];
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->text('biography')
-                ->after('profile_photo_path')
+                ->after('remember_token')
                 ->nullable(false);
 
             $table->date('year_of_birth')
