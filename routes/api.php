@@ -9,7 +9,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\User\Collection;
 use App\Http\Controllers\User\Delete;
 use App\Http\Controllers\User\Detail;
-use App\Http\Controllers\User\ResetPassword;
+use App\Http\Controllers\User\ChangePassword;
 use App\Http\Controllers\User\Update;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,10 +25,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::prefix('auth')->group(function () {
     Route::post('login', Login::class);
     Route::post('registration', Registration::class);
@@ -43,7 +39,7 @@ Route::prefix('users')->group(function () {
     Route::get('{user}', Detail::class);
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('{user}', Update::class);
-        Route::put('{user}/reset-password', ResetPassword::class);
+        Route::put('{user}/reset-password', ChangePassword::class);
         Route::delete('{user}', Delete::class);
     });
 });

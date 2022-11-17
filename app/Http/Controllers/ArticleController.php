@@ -42,13 +42,18 @@ class ArticleController extends Controller
     {
         $user = auth('sanctum')->user();
 
-        if (!$user->tokenCan(Roles::Admin->getName())) {
+        /** @var User $user */
+        if ($user->cannot('create', Article::class)) {
             return response()->json([
                 'message' => 'У вас недостаточно прав'
             ], 403);
         }
 
-        $article = Article::create($request->validated());
+        $article = Article::create([
+            'title' => $request->validated('title'),
+            'text' => $request->validated('text'),
+            'author_id' => $user->id
+        ]);
         $categories = $request->input('categories');
         $article->categories()->attach($categories);
 
@@ -64,18 +69,13 @@ class ArticleController extends Controller
      * @param Article $article
      * @param ShowArticleRequest $request
      * @return ArticleResource
-     * @throws HttpClientException
      */
     public function show(Article $article, ShowArticleRequest $request): ArticleResource
     {
         $with = $request->validated('with');
 
         if (!empty($with)) {
-            if (!in_array(null, $with)) {
-                $article->load($with);
-            } else {
-                throw new HttpClientException('Параметр with должен быть заполнен');
-            }
+            $article->load($with);
         }
 
         return new ArticleResource($article);
@@ -92,15 +92,10 @@ class ArticleController extends Controller
     {
         $user = auth('sanctum')->user();
 
-        if (!$user->tokenCan(Roles::Author->getName())) {
+        /** @var User $user */
+        if ($user->cannot('update', $article) && !$user->isAdmin()) {
             return response()->json([
                 'message' => 'У вас недостаточно прав'
-            ], 403);
-        }
-
-        if ($user->id !== $article->author_id) {
-            return response()->json([
-                'message' => 'Вы не являетесь автором статьи'
             ], 403);
         }
 
@@ -122,20 +117,12 @@ class ArticleController extends Controller
     {
         $user = auth('sanctum')->user();
 
-        if (!$user->tokenCan(Roles::Author->getName())) {
+        /** @var User $user */
+        if ($user->cannot('update', $article) && !$user->isAdmin()) {
             return response()->json([
                 'message' => 'У вас недостаточно прав'
             ], 403);
         }
-
-        if ($user->id !== $article->author_id) {
-            return response()->json([
-                'message' => 'Вы не являетесь автором статьи'
-            ], 403);
-        }
-//        if(User::isAuthorOrAdmin($user, $article)) {
-//            $article->delete();
-//        }
 
         $article->delete();
 

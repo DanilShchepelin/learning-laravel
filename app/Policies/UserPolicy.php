@@ -21,6 +21,7 @@ class UserPolicy
         return Response::allow();
     }
 
+
     /**
      * Determine whether the user can view the model.
      *
@@ -41,7 +42,8 @@ class UserPolicy
      */
     public function create(User $user): Response|bool
     {
-        return Response::deny('ЗАлупа');
+//        return Response::deny('ЗАлупа');
+        return Response::allow();
     }
 
     /**

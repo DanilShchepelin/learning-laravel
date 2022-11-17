@@ -26,8 +26,7 @@ class StoreArticleRequest extends FormRequest
         return [
             'title' => 'required|string',
             'text' => 'required|string',
-            'author_id' => 'required|exists:App\Models\User,id',
-//            '*.' => 'prohibited',
+//            'author_id' => 'required|exists:App\Models\User,id',
         ];
     }
 

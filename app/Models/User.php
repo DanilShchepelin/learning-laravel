@@ -122,4 +122,9 @@ class User extends Authenticatable implements HasMedia
             ->fit(Manipulations::FIT_CROP, 150, 150)
             ->nonQueued();
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === Roles::Admin->getName();
+    }
 }
