@@ -2,12 +2,11 @@
 
 namespace App\Policies;
 
-use App\Enums\Roles;
-use App\Models\Article;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ArticlePolicy
+class CategoryPolicy
 {
     use HandlesAuthorization;
 
@@ -27,33 +26,33 @@ class ArticlePolicy
      */
     public function create(User $user): bool
     {
-        if (!$user->tokenCan(Roles::Author->getName()) && !$user->isAdmin()) {
+        if (!$user->isAdmin()) {
             return false;
         }
         return true;
     }
 
     /**
+     * @param Category $category
      * @param User $user
-     * @param Article $article
      * @return bool
      */
-    public function update(User $user, Article $article): bool
+    public function update(Category $category, User $user): bool
     {
-        if ($user->id !== $article->author_id || !$user->isAdmin()) {
+        if (!$user->isAdmin()) {
             return false;
         }
         return true;
     }
 
     /**
+     * @param Category $category
      * @param User $user
-     * @param Article $article
      * @return bool
      */
-    public function delete(User $user, Article $article): bool
+    public function delete(Category $category, User $user): bool
     {
-        if ($user->id !== $article->author_id || !$user->isAdmin()) {
+        if (!$user->isAdmin()) {
             return false;
         }
         return true;

@@ -6,6 +6,7 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Client\HttpClientException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class CategoryController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $categories = Category::paginate($request->query('per_page', 5));
+
         return CategoryResource::collection($categories);
     }
 
@@ -33,7 +35,15 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request): JsonResponse
     {
+        /** @var User $user */
+        if ($user->cannot('create', Category::class)) {
+            return response()->json([
+                'message' => 'У вас недостаточно прав'
+            ], 403);
+        }
+
         $parent_id = $request->validated('parent_id');
+
         if (!empty($parent_id)) {
             $parent = Category::find($parent_id);
             if (!empty($parent)) {
@@ -69,18 +79,29 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $category->update($request->validated());
+        /** @var User $user */
+        if ($user->cannot('update', Category::class)) {
+            return response()->json([
+                'message' => 'У вас недостаточно прав'
+            ], 403);
+        }
 
-//        $parent_id = $request->validated('parent_id');
-//
-//        if (!empty($parent_id)) {
-//            $parent = Category::find($parent_id);
-//            if (!empty($parent)) {
-//                $category->update($request->validated());
-//            } else {
-//                throw new HttpClientException('Не существует родительской категории с ID: ' . $parent_id);
-//            }
-//        }
+        $parent_id = $request->validated('parent_id');
+
+        if (!empty($parent_id)) {
+            $parent = Category::find($parent_id);
+            if (!empty($parent)) {
+                $category->update($request->validated());
+            } else {
+                throw new HttpClientException('Не существует родительской категории с ID: ' . $parent_id);
+            }
+        }
+
+        $category->update([
+            'title' => $request->validated('title'),
+            'description' => $request->validated('description'),
+            'parent_id' => $parent_id
+        ]);
 
         return response()->json([
             'message' => 'Category updated successfully',
@@ -96,6 +117,13 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category): JsonResponse
     {
+        /** @var User $user */
+        if ($user->cannot('delete', Category::class)) {
+            return response()->json([
+                'message' => 'У вас недостаточно прав'
+            ], 403);
+        }
+
         $category->delete();
 
         return response()->json([
