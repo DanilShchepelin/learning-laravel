@@ -5,8 +5,9 @@ namespace App\Policies;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
-class CategoryPolicy
+class CategoryPolicy extends ApiPolicy
 {
     use HandlesAuthorization;
 
@@ -26,35 +27,26 @@ class CategoryPolicy
      */
     public function create(User $user): bool
     {
-        if (!$user->isAdmin()) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
     /**
-     * @param Category $category
      * @param User $user
+     * @param Category $category
      * @return bool
      */
-    public function update(Category $category, User $user): bool
+    public function update(User $user, Category $category): bool
     {
-        if (!$user->isAdmin()) {
-            return false;
-        }
-        return true;
+        return false;
     }
 
     /**
-     * @param Category $category
      * @param User $user
+     * @param Category $category
      * @return bool
      */
-    public function delete(Category $category, User $user): bool
+    public function delete(User $user, Category $category): bool
     {
-        if (!$user->isAdmin()) {
-            return false;
-        }
-        return true;
+        return false;
     }
 }

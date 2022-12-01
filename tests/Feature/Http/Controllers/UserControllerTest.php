@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -40,11 +41,13 @@ class UserControllerTest extends TestCase
      */
     public function testStore(): void
     {
-        $user = User::factory()->make();
+        $auth_user = User::factory()->create(['role' => Roles::Admin->getName()]);
 
+        $user = User::factory()->make();
         $user = $user->toArray();
         $user['password'] = 'Passw0rd';
-        $response = $this->post('/api/users', $user);
+
+        $response = $this->actingAs($auth_user, 'sanctum')->post('/api/users', $user);
 
         $response->assertStatus(201);
     }
@@ -79,7 +82,7 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create(['name' => 'Ivan']);
 
-        $response = $this->put("/api/users/{$user->id}", ['name' => "Danil"]);
+        $response = $this->actingAs($user, 'sanctum')->post("/api/users/{$user->id}", ['name' => "Danil"]);
 
         $response
             ->assertJsonFragment(['name' => 'Danil'])
@@ -93,7 +96,7 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->delete("/api/users/{$user->id}");
+        $response = $this->actingAs($user, 'sanctum')->delete("/api/users/{$user->id}");
 
         $response->assertStatus(204);
 

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class Collection extends \App\Http\Controllers\Controller
+class Collection extends Controller
 {
     /**
      * Display a listing of the resource.

@@ -7,7 +7,7 @@ use App\Models\Article;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class ArticlePolicy
+class ArticlePolicy extends ApiPolicy
 {
     use HandlesAuthorization;
 
@@ -40,7 +40,7 @@ class ArticlePolicy
      */
     public function update(User $user, Article $article): bool
     {
-        if ($user->id !== $article->author_id || !$user->isAdmin()) {
+        if ($user->id !== $article->author_id) {
             return false;
         }
         return true;
@@ -53,7 +53,7 @@ class ArticlePolicy
      */
     public function delete(User $user, Article $article): bool
     {
-        if ($user->id !== $article->author_id || !$user->isAdmin()) {
+        if ($user->id !== $article->author_id) {
             return false;
         }
         return true;

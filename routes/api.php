@@ -1,17 +1,24 @@
 <?php
 
-use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\Article\Collection as ArticleCollection;
+use App\Http\Controllers\Article\Delete as ArticleDelete;
+use App\Http\Controllers\Article\Detail as ArticleDetail;
+use App\Http\Controllers\Article\Store as ArticleStore;
+use App\Http\Controllers\Article\Update as ArticleUpdate;
 use App\Http\Controllers\Authentication\Login;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Me;
 use App\Http\Controllers\Authentication\Registration;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\User\Collection;
-use App\Http\Controllers\User\Delete;
-use App\Http\Controllers\User\Detail;
+use App\Http\Controllers\Category\Collection as CategoryCollection;
+use App\Http\Controllers\Category\Delete as CategoryDelete;
+use App\Http\Controllers\Category\Detail as CategoryDetail;
+use App\Http\Controllers\Category\Store as CategoryStore;
+use App\Http\Controllers\Category\Update as CategoryUpdate;
+use App\Http\Controllers\User\Collection as UserCollection;
+use App\Http\Controllers\User\Delete as UserDelete;
+use App\Http\Controllers\User\Detail as UserDetail;
 use App\Http\Controllers\User\ChangePassword;
-use App\Http\Controllers\User\Update;
-use Illuminate\Http\Request;
+use App\Http\Controllers\User\Update as UserUpdate;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,14 +42,31 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::prefix('users')->group(function () {
-    Route::get('/', Collection::class);
-    Route::get('{user}', Detail::class);
+    Route::get('/', UserCollection::class);
+    Route::get('{user}', UserDetail::class);
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('{user}', Update::class);
-        Route::put('{user}/reset-password', ChangePassword::class);
-        Route::delete('{user}', Delete::class);
+        Route::post('{user}', UserUpdate::class)->can('update', 'user');
+        Route::put('{user}/reset-password', ChangePassword::class)->can('update', 'user');
+        Route::delete('{user}', UserDelete::class)->can('delete', 'user');
     });
 });
 
-Route::apiResource('articles', ArticleController::class);
-Route::apiResource('categories', CategoryController::class);
+Route::prefix('articles')->group(function () {
+    Route::get('/', ArticleCollection::class);
+    Route::get('{article}', ArticleDetail::class);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('', ArticleStore::class)->can('create', \App\Models\Article::class);
+        Route::post('{article}', ArticleUpdate::class)->can('update', 'article');
+        Route::delete('{article}', ArticleDelete::class)->can('delete', 'article');
+    });
+});
+
+Route::prefix('categories')->group(function () {
+    Route::get('/', CategoryCollection::class);
+    Route::get('{category}', CategoryDetail::class);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('', CategoryStore::class)->can('create', \App\Models\Category::class);
+        Route::post('{category}', CategoryUpdate::class)->can('update', 'category');
+        Route::delete('{category}', CategoryDelete::class)->can('delete', 'category');
+    });
+});
