@@ -1,7 +1,8 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers;
+namespace Feature\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -41,9 +42,10 @@ class ArticleControllerTest extends TestCase
      */
     public function testStore(): void
     {
-        User::factory()->create();
-        $article = Article::factory()->make();
-        $response = $this->post('/api/articles', $article->toArray());
+        $user = User::factory()->create(['role' => Roles::Author->getName()]);
+        $article = Article::factory()->create(['author_id' => $user->id]);
+
+        $response = $this->actingAs($user, 'sanctum')->post('/api/articles', $article->toArray());
 
         $response
             ->assertStatus(201);
@@ -78,9 +80,11 @@ class ArticleControllerTest extends TestCase
      */
     public function testUpdate(): void
     {
-        User::factory()->create();
-        $article = Article::factory()->create(['title' => 'Hello']);
-        $response = $this->put("/api/articles/{$article->id}", ['title' => 'Hello2']);
+        $user = User::factory()->create(['role' => Roles::Author->getName()]);
+        $article = Article::factory()->create(['title' => 'Hello', 'author_id' => $user->id]);
+        $response = $this
+            ->actingAs($user, 'sanctum')
+            ->post("/api/articles/{$article->id}", ['title' => 'Hello2']);
 
         $response
             ->assertJsonFragment(['title' => 'Hello2'])
@@ -92,10 +96,12 @@ class ArticleControllerTest extends TestCase
      */
     public function testDestroy(): void
     {
-        User::factory()->create();
-        $article = Article::factory()->create();
+        $user = User::factory()->create(['role' => Roles::Author->getName()]);
+        $article = Article::factory()->create(['author_id' => $user->id]);
 
-        $response = $this->delete("/api/articles/{$article->id}");
+        $response = $this
+            ->actingAs($user, 'sanctum')
+            ->delete("/api/articles/{$article->id}");
 
         $response->assertStatus(204);
 

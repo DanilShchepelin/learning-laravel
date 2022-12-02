@@ -6,6 +6,7 @@ use App\Enums\Roles;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Laravel\Jetstream\Role;
 
 class ArticlePolicy extends ApiPolicy
 {
@@ -27,7 +28,7 @@ class ArticlePolicy extends ApiPolicy
      */
     public function create(User $user): bool
     {
-        if (!$user->tokenCan(Roles::Author->getName()) && !$user->isAdmin()) {
+        if ($user->role !== Roles::Author->getName()) {
             return false;
         }
         return true;

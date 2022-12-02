@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers;
+namespace Feature\Http\Controllers;
 
 use App\Enums\Roles;
 use App\Models\User;
@@ -39,17 +39,16 @@ class UserControllerTest extends TestCase
     /**
      * @return void
      */
-    public function testStore(): void
+    public function testChangePassword(): void
     {
-        $auth_user = User::factory()->create(['role' => Roles::Admin->getName()]);
+        $user = User::factory()->create(['password' => 'password']);
 
-        $user = User::factory()->make();
-        $user = $user->toArray();
-        $user['password'] = 'Passw0rd';
+        $response = $this
+            ->actingAs($user, 'sanctum')
+            ->put("/api/users/{$user->id}/reset-password", ['current_password' => 'password', 'password' => 'Passw0rd']);
 
-        $response = $this->actingAs($auth_user, 'sanctum')->post('/api/users', $user);
-
-        $response->assertStatus(201);
+        $response
+            ->assertStatus(200);
     }
 
     /**
@@ -94,7 +93,7 @@ class UserControllerTest extends TestCase
      */
     public function testDestroy(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
 
         $response = $this->actingAs($user, 'sanctum')->delete("/api/users/{$user->id}");
 

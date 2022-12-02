@@ -1,8 +1,10 @@
 <?php
 
-namespace Tests\Feature\Http\Controllers;
+namespace Feature\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -58,9 +60,12 @@ class CategoryControllerTest extends TestCase
      */
     public function testStore(): void
     {
-        $category = Category::factory()->make();
+        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
+        $category = Category::factory()->create();
 
-        $response = $this->post('/api/categories', $category->toArray());
+        $response = $this
+            ->actingAs($user, 'sanctum')
+            ->post('/api/categories', $category->toArray());
 
         $response->assertStatus(201);
     }
@@ -70,9 +75,12 @@ class CategoryControllerTest extends TestCase
      */
     public function testUpdate(): void
     {
+        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
         $category = Category::factory()->create(['title' => 'Hello']);
 
-        $response = $this->put("/api/categories/{$category->id}", ['title' => 'hello2']);
+        $response = $this
+            ->actingAs($user, 'sanctum')
+            ->post("/api/categories/{$category->id}", ['title' => 'hello2']);
 
         $response
             ->assertJsonFragment(['title' => 'hello2'])
@@ -84,9 +92,12 @@ class CategoryControllerTest extends TestCase
      */
     public function testDestroy(): void
     {
+        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
         $category = Category::factory()->create();
 
-        $response = $this->delete("/api/categories/{$category->id}");
+        $response = $this
+            ->actingAs($user, 'sanctum')
+            ->delete("/api/categories/{$category->id}");
 
         $response->assertStatus(200);
 
