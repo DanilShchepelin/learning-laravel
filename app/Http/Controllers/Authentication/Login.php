@@ -18,6 +18,7 @@ class Login extends Controller
      */
     public function __invoke(LoginUserRequest $request): JsonResponse
     {
+        $current_user = auth('sanctum')->user();
         $user = User::where('email', $request->validated('email'))->firstOrFail();
 
         if (Hash::check($request->validated('password'), $user->password) === false) {
@@ -26,8 +27,6 @@ class Login extends Controller
             ]);
         }
 
-        /** @var User $current_user */
-        $current_user = auth('sanctum')->user();
         if ($current_user !== null && $current_user->tokens()->exists()) {
             $current_user->tokens()->delete();
         }
@@ -38,9 +37,10 @@ class Login extends Controller
 
         $token = $user->createToken('auth_token', Roles::getAbilities($user->role));
 
-        return response()->json([
-            'access_token' => $token->plainTextToken,
-            'token_type' => 'Bearer'
-        ]);
+        return response()
+            ->json([
+                'access_token' => $token->plainTextToken,
+                'token_type' => 'Bearer'
+            ]);
     }
 }

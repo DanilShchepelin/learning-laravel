@@ -13,22 +13,12 @@ class ArticlePolicy extends ApiPolicy
     use HandlesAuthorization;
 
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * @param User $user
      * @return bool
      */
     public function create(User $user): bool
     {
-        if ($user->role !== Roles::Author->getName()) {
+        if ($user->can('article:create')) {
             return false;
         }
         return true;

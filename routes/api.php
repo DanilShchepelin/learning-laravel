@@ -37,7 +37,7 @@ Route::prefix('auth')->group(function () {
     Route::post('registration', Registration::class);
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', Logout::class);
-        Route::post('me', Me::class);
+        Route::get('me', Me::class);
     });
 });
 

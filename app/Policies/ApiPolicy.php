@@ -11,6 +11,7 @@ class ApiPolicy
 
     /**
      * @param User $user
+     * @return bool|void
      */
     public function before(User $user)
     {

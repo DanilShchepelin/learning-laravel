@@ -27,11 +27,7 @@ class Update extends Controller
             }
         }
 
-        $category->update([
-            'title' => $request->validated('title'),
-            'description' => $request->validated('description'),
-            'parent_id' => $parent_id
-        ]);
+        $category->update($request->validated());
 
         return response()->json([
             'message' => 'Category updated successfully',

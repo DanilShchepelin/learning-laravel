@@ -1,14 +1,15 @@
 <?php
 
-namespace Feature\Http\Controllers;
+namespace Tests\Feature\Http\Controllers\Article;
 
 use App\Enums\Roles;
 use App\Models\Article;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ArticleControllerTest extends TestCase
+class OtherTest extends TestCase
 {
     /**
      * A basic feature test example.
@@ -42,13 +43,14 @@ class ArticleControllerTest extends TestCase
      */
     public function testStore(): void
     {
-        $user = User::factory()->create(['role' => Roles::Author->getName()]);
-        $article = Article::factory()->create(['author_id' => $user->id]);
+        $user = User::factory()->create(['role' => Roles::Other->getName()]);
+        $article = Article::factory()->create();
 
-        $response = $this->actingAs($user, 'sanctum')->post('/api/articles', $article->toArray());
+        $this
+            ->actingAs($user, 'sanctum')
+            ->post('/api/articles', $article->toArray())
+            ->assertStatus(403);
 
-        $response
-            ->assertStatus(201);
     }
 
     /**
@@ -80,15 +82,12 @@ class ArticleControllerTest extends TestCase
      */
     public function testUpdate(): void
     {
-        $user = User::factory()->create(['role' => Roles::Author->getName()]);
-        $article = Article::factory()->create(['title' => 'Hello', 'author_id' => $user->id]);
-        $response = $this
+        $user = User::factory()->create(['role' => Roles::Other->getName()]);
+        $article = Article::factory()->create(['title' => 'Hello']);
+        $this
             ->actingAs($user, 'sanctum')
-            ->post("/api/articles/{$article->id}", ['title' => 'Hello2']);
-
-        $response
-            ->assertJsonFragment(['title' => 'Hello2'])
-            ->assertStatus(200);
+            ->post("/api/articles/{$article->id}", ['title' => 'Hello2'])
+            ->assertStatus(403);
     }
 
     /**
@@ -96,14 +95,13 @@ class ArticleControllerTest extends TestCase
      */
     public function testDestroy(): void
     {
-        $user = User::factory()->create(['role' => Roles::Author->getName()]);
-        $article = Article::factory()->create(['author_id' => $user->id]);
+        $user = User::factory()->create(['role' => Roles::Other->getName()]);
+        $article = Article::factory()->create();
 
-        $response = $this
+        $this
             ->actingAs($user, 'sanctum')
-            ->delete("/api/articles/{$article->id}");
-
-        $response->assertStatus(204);
+            ->delete("/api/articles/{$article->id}")
+            ->assertStatus(403);
 
         $this->expectException(ModelNotFoundException::class);
         Article::query()->findOrFail($article->id);

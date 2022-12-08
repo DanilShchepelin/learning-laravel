@@ -1,15 +1,14 @@
 <?php
 
-namespace Feature\Http\Controllers;
+namespace Tests\Feature\Http\Controllers\Category;
 
 use App\Enums\Roles;
 use App\Models\Category;
 use App\Models\User;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CategoryControllerTest extends TestCase
+class OtherTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -58,24 +57,24 @@ class CategoryControllerTest extends TestCase
     /**
      * @return void
      */
-    public function testStore(): void
+    public function testCanOtherStore(): void
     {
-        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
+        $user = User::factory()->create(['role' => Roles::Other->getName()]);
         $category = Category::factory()->create();
 
         $response = $this
             ->actingAs($user, 'sanctum')
             ->post('/api/categories', $category->toArray());
 
-        $response->assertStatus(201);
+        $response->assertStatus(403);
     }
 
     /**
      * @return void
      */
-    public function testUpdate(): void
+    public function testCanOtherUpdate(): void
     {
-        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
+        $user = User::factory()->create(['role' => Roles::Other->getName()]);
         $category = Category::factory()->create(['title' => 'Hello']);
 
         $response = $this
@@ -83,25 +82,21 @@ class CategoryControllerTest extends TestCase
             ->post("/api/categories/{$category->id}", ['title' => 'hello2']);
 
         $response
-            ->assertJsonFragment(['title' => 'hello2'])
-            ->assertStatus(200);
+            ->assertStatus(403);
     }
 
     /**
      * @return void
      */
-    public function testDestroy(): void
+    public function testCanOtherDestroy(): void
     {
-        $user = User::factory()->create(['role' => Roles::Admin->getName()]);
+        $user = User::factory()->create(['role' => Roles::Other->getName()]);
         $category = Category::factory()->create();
 
         $response = $this
             ->actingAs($user, 'sanctum')
             ->delete("/api/categories/{$category->id}");
 
-        $response->assertStatus(200);
-
-        $this->expectException(ModelNotFoundException::class);
-        Category::query()->findOrFail($category->id);
+        $response->assertStatus(403);
     }
 }

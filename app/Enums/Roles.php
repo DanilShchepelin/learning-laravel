@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use Exception;
+
 enum Roles
 {
     case Admin;
@@ -11,6 +13,7 @@ enum Roles
     /**
      * @param string $role
      * @return array
+     * @throws Exception
      */
     public static function getAbilities(string $role): array
     {
@@ -19,7 +22,10 @@ enum Roles
         return match ($role->name) {
             self::Admin->name => ['*'],
             self::Other->name => [],
-            default => [$role->name],
+            self::Author->name => [
+                'article:create'
+            ],
+            default => throw new Exception('Не поддерживаемая роль'),
         };
     }
 

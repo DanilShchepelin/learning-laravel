@@ -12,12 +12,10 @@ class Store extends Controller
 {
     public function __invoke(StoreArticleRequest $request): JsonResponse
     {
-        $user = auth()->user();
-
         $article = Article::create([
             'title' => $request->validated('title'),
             'text' => $request->validated('text'),
-            'author_id' => $user->id
+            'author_id' => $request->user()->id
         ]);
         $categories = $request->input('categories');
         $article->categories()->attach($categories);

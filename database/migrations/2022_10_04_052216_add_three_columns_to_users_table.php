@@ -16,11 +16,11 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->text('biography')
                 ->after('remember_token')
-                ->nullable(false);
+                ->nullable();
 
             $table->date('year_of_birth')
                 ->after('biography')
-                ->nullable(false);
+                ->nullable();
 
             $table->string('slug')
                 ->after('year_of_birth')
