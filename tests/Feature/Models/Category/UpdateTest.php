@@ -3,20 +3,20 @@
 namespace Feature\Models\Category;
 
 use App\Models\Category;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class CreateTest extends TestCase
+class UpdateTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * @return void
      */
-    public function testCategoryIsCreated(): void
+    public function testCategoryIsUpdate(): void
     {
         $category = Category::factory()->create();
 
+        $category->update(['title' => 'Test']);
+
         $this->assertTrue($category->exists);
+        $this->assertEquals('Test', $category->title, 'Данные не совпадают');
     }
 }

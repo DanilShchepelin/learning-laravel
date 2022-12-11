@@ -3,20 +3,21 @@
 namespace Feature\Models\Article;
 
 use App\Models\Article;
-use App\Models\User;
 use Tests\TestCase;
 
-class CreateTest extends TestCase
+class DeleteTest extends TestCase
 {
     /**
      * A basic feature test example.
      *
      * @return void
      */
-    public function testArticleIsCreate(): void
+    public function testArticleIsDelete(): void
     {
         $article = Article::factory()->create(['author_id' => 1]);
 
-        $this->assertTrue($article->exists);
+        $article->delete();
+
+        $this->assertFalse($article->exists);
     }
 }
