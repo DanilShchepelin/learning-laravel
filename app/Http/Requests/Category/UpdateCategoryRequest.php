@@ -24,9 +24,9 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'string',
-            'description' => 'string',
-            'parent_id' => 'int'
+            'title' => 'string|max:255',
+            'description' => 'string|max:65535',
+            'parent_id' => 'integer|nullable|exists:App\Models\Category,id'
         ];
     }
 }

@@ -4,11 +4,17 @@ namespace App\Enums;
 
 use Exception;
 
-enum Roles
+abstract class Roles
 {
-    case Admin;
-    case Author;
-    case Other;
+    public const ADMIN = 'admin';
+    public const AUTHOR = 'author';
+    public const OTHER = 'other';
+
+    public const OPTIONS = [
+        self::ADMIN,
+        self::AUTHOR,
+        self::OTHER,
+    ];
 
     /**
      * @param string $role
@@ -17,25 +23,25 @@ enum Roles
      */
     public static function getAbilities(string $role): array
     {
-        $role = self::create($role);
+        if (self::isNotValid($role)) {
+            throw new Exception('Не поддерживаемая роль');
+        }
 
-        return match ($role->name) {
-            self::Admin->name => ['*'],
-            self::Other->name => [],
-            self::Author->name => [
-                'article:create'
-            ],
-            default => throw new Exception('Не поддерживаемая роль'),
+        return match ($role) {
+            self::ADMIN => ['*'],
+            self::AUTHOR => ['article:create'],
+            self::OTHER => [],
         };
     }
 
-    public function getName(): string
+    private static function isValid(string $role): bool
     {
-        return $this->name;
+        return in_array($role, self::OPTIONS);
     }
 
-    private static function create(string $string): self
+    private static function isNotValid(string $role): bool
     {
-        return constant(self::class . "::{$string}");
+        return !self::isValid($role);
     }
+
 }

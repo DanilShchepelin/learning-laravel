@@ -18,10 +18,10 @@ class ArticlePolicy extends ApiPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->can('article:create')) {
-            return false;
+        if ($user->tokenCan('article:create')) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -31,10 +31,10 @@ class ArticlePolicy extends ApiPolicy
      */
     public function update(User $user, Article $article): bool
     {
-        if ($user->id !== $article->author_id) {
-            return false;
+        if ($user->id === $article->author_id) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -44,9 +44,9 @@ class ArticlePolicy extends ApiPolicy
      */
     public function delete(User $user, Article $article): bool
     {
-        if ($user->id !== $article->author_id) {
-            return false;
+        if ($user->id === $article->author_id) {
+            return true;
         }
-        return true;
+        return false;
     }
 }

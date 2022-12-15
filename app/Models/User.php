@@ -125,11 +125,11 @@ class User extends Authenticatable implements HasMedia
 
     public function isAdmin(): bool
     {
-        return $this->role === Roles::Admin->getName();
+        return $this->role === Roles::ADMIN;
     }
 
     public function isAuthor(): bool
     {
-        return $this->role === Roles::Author->getName();
+        return $this->role === Roles::AUTHOR;
     }
 }

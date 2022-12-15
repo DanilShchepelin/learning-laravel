@@ -34,7 +34,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'biography' => $this->faker->text(),
             'year_of_birth' => $this->faker->date(),
-            'role' => Roles::Other->getName(),
+            'role' => Roles::OTHER,
         ];
     }
 

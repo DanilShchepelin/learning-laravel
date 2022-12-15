@@ -12,16 +12,6 @@ class CategoryPolicy extends ApiPolicy
     use HandlesAuthorization;
 
     /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
      * @param User $user
      * @return bool
      */

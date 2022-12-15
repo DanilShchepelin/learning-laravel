@@ -15,6 +15,6 @@ class Delete extends Controller
 
         return response()->json([
             'message' => 'Category deleted successfully',
-        ], 200);
+        ], 204);
     }
 }

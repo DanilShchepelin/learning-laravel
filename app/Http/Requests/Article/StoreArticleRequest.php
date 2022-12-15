@@ -11,7 +11,7 @@ class StoreArticleRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -21,26 +21,11 @@ class StoreArticleRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'title' => 'required|string',
-            'text' => 'required|string',
-//            'author_id' => 'required|exists:App\Models\User,id',
-        ];
-    }
-
-    /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
-    public function messages(): array
-    {
-        return [
-            'title.required' => 'A title is required',
-            'text.required' => 'A body is required',
-            'author_id.required' => 'An author is required'
+            'title' => 'required|string|max:255',
+            'text' => 'required|string|max:65535',
         ];
     }
 }

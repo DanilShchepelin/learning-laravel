@@ -24,8 +24,8 @@ class UpdateArticleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'string',
-            'text' => 'string',
+            'title' => 'string|max:255',
+            'text' => 'string|max:65535',
             'author_id' => 'exists:App\Models\User,id'
         ];
     }

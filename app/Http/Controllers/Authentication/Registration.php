@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Authentication;
 
+use App\Enums\TokensTypes;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
@@ -18,7 +19,7 @@ class Registration extends \App\Http\Controllers\Controller
     public function __invoke(StoreUserRequest $request): JsonResponse
     {
         $user = (new User)->create($request->validated());
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken(TokensTypes::AUTH_TOKEN)->plainTextToken;
 
         return response()->json([
             UserResource::make($user),

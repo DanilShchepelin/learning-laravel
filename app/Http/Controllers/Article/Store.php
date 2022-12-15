@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Article;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\StoreArticleRequest;
 use App\Models\Article;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class Store extends Controller
 {
@@ -17,8 +18,10 @@ class Store extends Controller
             'text' => $request->validated('text'),
             'author_id' => $request->user()->id
         ]);
-        $categories = $request->input('categories');
-        $article->categories()->attach($categories);
+
+        $article
+            ->categories()
+            ->attach($request->input('categories'));
 
         return response()->json([
             'message' => 'Article created successfully',

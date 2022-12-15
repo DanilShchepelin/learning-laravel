@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Authentication;
 
 use App\Enums\Roles;
+use App\Enums\TokensTypes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\LoginUserRequest;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +17,7 @@ class Login extends Controller
     /**
      * @param LoginUserRequest $request
      * @return JsonResponse
+     * @throws Exception
      */
     public function __invoke(LoginUserRequest $request): JsonResponse
     {
@@ -35,7 +38,7 @@ class Login extends Controller
             $user->tokens()->delete();
         }
 
-        $token = $user->createToken('auth_token', Roles::getAbilities($user->role));
+        $token = $user->createToken(TokensTypes::AUTH_TOKEN, Roles::getAbilities($user->role));
 
         return response()
             ->json([

@@ -19,12 +19,12 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'Author',
             'email' => 'author@author.com',
-            'role' => Roles::Author->getName(),
+            'role' => Roles::AUTHOR,
         ]);
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@admin.com',
-            'role' => Roles::Admin->getName(),
+            'role' => Roles::ADMIN,
         ]);
     }
 }

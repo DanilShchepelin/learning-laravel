@@ -25,8 +25,8 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'title' => 'required|max:255',
-            'description' => 'required',
-            'parent_id' => 'int'
+            'description' => 'required|max:65535',
+            'parent_id' => 'integer|nullable|exists:App\Models\Category,id'
         ];
     }
 }

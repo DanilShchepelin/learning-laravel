@@ -2,13 +2,15 @@
 
 namespace Database\Factories;
 
+use App\Models\Article;
 use App\Models\User;
 use DB;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Collection;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Article>
+ * @extends Factory<Article>
  */
 class ArticleFactory extends Factory
 {
@@ -18,13 +20,17 @@ class ArticleFactory extends Factory
      * Define the model's default state.
      *
      * @return array<string, mixed>
+     * @throws Exception
      */
-    public function definition()
+    public function definition(): array
     {
         if (empty(self::$authors_id)) {
             self::$authors_id = User::all()->pluck('id');
         }
 
+        if (self::$authors_id->isEmpty()) {
+            throw new Exception('Нет пользователей');
+        }
         $author_id = self::$authors_id->random();
 
         return [

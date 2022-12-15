@@ -18,8 +18,6 @@ class Logout extends Controller
     {
         $request->user()->currentAccessToken()->deleteOrFail();
 
-        return response()->json([
-            'message' => 'Good bye!!!!!!'
-        ]);
+        return response()->json();
     }
 }

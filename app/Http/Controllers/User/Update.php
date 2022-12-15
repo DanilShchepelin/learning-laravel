@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\MediaCollections;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Resources\UserResource;
@@ -36,8 +37,8 @@ class Update extends Controller
         $user->update($request->validated());
 
         if ($request->hasFile('image')) {
-            $user->clearMediaCollection('profile_picture');
-            $user->addMediaFromRequest('image')->toMediaCollection('profile_picture');
+            $user->clearMediaCollection(MediaCollections::PROFILE_PICTURE);
+            $user->addMediaFromRequest('image')->toMediaCollection(MediaCollections::PROFILE_PICTURE);
         }
 
 

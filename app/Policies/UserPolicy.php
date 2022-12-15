@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Auth\Access\Response;
 
 class UserPolicy extends ApiPolicy
 {
@@ -19,10 +18,10 @@ class UserPolicy extends ApiPolicy
      */
     public function update(User $user, User $model): bool
     {
-        if($user->id !== $model->id) {
-            return false;
+        if($user->id === $model->id) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -34,30 +33,9 @@ class UserPolicy extends ApiPolicy
      */
     public function delete(User $user, User $model): bool
     {
+        if($user->id === $model->id) {
+            return true;
+        }
         return false;
     }
-
-//    /**
-//     * Determine whether the user can restore the model.
-//     *
-//     * @param User $user
-//     * @param User $model
-//     * @return Response|bool
-//     */
-//    public function restore(User $user, User $model): Response|bool
-//    {
-//        return Response::deny();
-//    }
-//
-//    /**
-//     * Determine whether the user can permanently delete the model.
-//     *
-//     * @param User $user
-//     * @param User $model
-//     * @return Response|bool
-//     */
-//    public function forceDelete(User $user, User $model): Response|bool
-//    {
-//        return Response::deny();
-//    }
 }
