@@ -24,8 +24,8 @@ class StoreTest extends TestCase
         $this->actingAsAuthor();
 
         $article = [
-            'title' => 'Test',
-            'text' => 'Text text'
+            'title' => $this->faker->title,
+            'text' => $this->faker->text
         ];
 
         $this
@@ -43,7 +43,7 @@ class StoreTest extends TestCase
         $this->validationTest(
             'required',
             '/api/articles',
-            ['title' => 'Test'],
+            ['title' => $this->faker->title],
             'text'
         );
     }
@@ -58,7 +58,7 @@ class StoreTest extends TestCase
         $this->validationTest(
             'required',
             '/api/articles',
-            ['text' => 'Test'],
+            ['text' => $this->faker->text],
             'title'
         );
     }
@@ -75,7 +75,7 @@ class StoreTest extends TestCase
             '/api/articles',
             [
                 'title' => $this->faker->realTextBetween(256, 270),
-                'text' => 'Test text'
+                'text' => $this->faker->text
             ],
             'title',
             ['max' => 255]
@@ -93,7 +93,7 @@ class StoreTest extends TestCase
             'max.string',
             '/api/articles',
             [
-                'title' => 'Title',
+                'title' => $this->faker->title,
                 'text' => $this->faker->realTextBetween(65536, 65700)
             ],
             'text',

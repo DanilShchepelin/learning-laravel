@@ -27,7 +27,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name' => 'max:70|string',
             'email' => 'email|unique:users,email',
-            'biography' => 'string',
+            'biography' => 'string|max:255',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ];
     }

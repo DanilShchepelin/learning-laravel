@@ -29,8 +29,8 @@ class UpdateTest extends TestCase
         $article = Article::factory()->create(['author_id' => $user_id]);
 
         $newData = [
-            'title' => 'New title',
-            'text' => 'New text',
+            'title' => $this->faker->title,
+            'text' => $this->faker->text,
             'author_id' => $author->id
         ];
 

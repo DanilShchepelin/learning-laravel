@@ -21,8 +21,8 @@ class StoreTest extends TestCase
         $this->actingAsAdmin();
 
         $category = [
-            'title' => 'Test',
-            'description' => 'Test description'
+            'title' => $this->faker->title,
+            'description' => $this->faker->text
         ];
 
         $this
@@ -40,7 +40,7 @@ class StoreTest extends TestCase
         $this->validationTest(
             'required',
             '/api/categories',
-            ['description' => 'Test description'],
+            ['description' => $this->faker->text],
             'title'
         );
     }
@@ -57,7 +57,7 @@ class StoreTest extends TestCase
             '/api/categories',
             [
                 'title' => $this->faker->realTextBetween(256, 270),
-                'description' => 'Test description'
+                'description' => $this->faker->text
             ],
             'title',
             ['max' => 255]
@@ -75,7 +75,7 @@ class StoreTest extends TestCase
             'max.string',
             '/api/categories',
             [
-                'title' => 'Title',
+                'title' => $this->faker->title,
                 'description' => $this->faker->realTextBetween(65536, 65700)
             ],
             'description',
@@ -93,7 +93,7 @@ class StoreTest extends TestCase
         $this->validationTest(
             'required',
             '/api/categories',
-            ['title' => 'Test'],
+            ['title' => $this->faker->title],
             'description'
         );
     }
@@ -109,8 +109,8 @@ class StoreTest extends TestCase
             'exists',
             '/api/categories',
             [
-                'title' => 'Test',
-                'description' => 'Test description',
+                'title' => $this->faker->title,
+                'description' => $this->faker->text,
                 'parent_id' => 999
             ],
             'parent_id',
@@ -129,8 +129,8 @@ class StoreTest extends TestCase
             'integer',
             '/api/categories',
             [
-                'title' => 'Test',
-                'description' => 'Test description',
+                'title' => $this->faker->title,
+                'description' => $this->faker->text,
                 'parent_id' => 'Isn`t integer',
             ],
             'parent_id',
