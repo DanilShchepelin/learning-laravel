@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Controllers\Category\Validation;
 
+use App\Models\Category;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -68,6 +69,21 @@ class StoreTest extends TestCase
      * @return void
      * @throws Exception
      */
+    public function testRequiredFieldDescription(): void
+    {
+        $this->actingAsAdmin();
+        $this->validationTest(
+            'required',
+            '/api/categories',
+            ['title' => $this->faker->title],
+            'description'
+        );
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testMaxFieldDescription(): void
     {
         $this->actingAsAdmin();
@@ -80,21 +96,6 @@ class StoreTest extends TestCase
             ],
             'description',
             ['max' => 65535]
-        );
-    }
-
-    /**
-     * @return void
-     * @throws Exception
-     */
-    public function testRequiredFieldDescription(): void
-    {
-        $this->actingAsAdmin();
-        $this->validationTest(
-            'required',
-            '/api/categories',
-            ['title' => $this->faker->title],
-            'description'
         );
     }
 
@@ -136,5 +137,29 @@ class StoreTest extends TestCase
             'parent_id',
             ['attribute' => 'parent id']
         );
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testParentIdCanBeNull(): void
+    {
+        $this->actingAsAdmin();
+        $category = [
+            'title' => $this->faker->title,
+            'description' => $this->faker->text,
+            'parent_id' => null
+        ];
+
+        $this
+            ->postJson('/api/categories', $category)
+            ->assertStatus(201);
+
+        $category_new = Category::where('title', $category['title'])
+            ->where('description', $category['description'])
+            ->first();
+
+        $this->assertEquals(null, $category_new->parent_id);
     }
 }

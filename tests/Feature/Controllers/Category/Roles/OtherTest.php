@@ -80,10 +80,7 @@ class OtherTest extends TestCase
      */
     public function testCanOtherUpdate(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::OTHER]),
-            Roles::getAbilities(Roles::OTHER)
-        );
+        $this->actingAsOther();
 
         $category = Category::factory()->create(['title' => 'Hello']);
 
@@ -100,10 +97,7 @@ class OtherTest extends TestCase
      */
     public function testCanOtherDestroy(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::OTHER]),
-            Roles::getAbilities(Roles::OTHER)
-        );
+        $this->actingAsOther();
 
         $category = Category::factory()->create();
 

@@ -7,7 +7,6 @@ use App\Models\User;
 use Exception;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Laravel\Sanctum\Sanctum;
-use PHPUnit\Util\Exception as UnitException;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -42,6 +41,20 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * @return int
+     * @throws Exception
+     */
+    protected function actingAsOther(): int
+    {
+        $user = User::factory()->create(['role' => Roles::OTHER]);
+        Sanctum::actingAs(
+            $user,
+            Roles::getAbilities(Roles::OTHER)
+        );
+        return $user->id;
+    }
+
+    /**
      * @param string $rule
      * @param string $url
      * @param array $body
@@ -49,6 +62,7 @@ abstract class TestCase extends BaseTestCase
      * @param array $replaces
      * @param string $method
      * @return void
+     * @throws Exception
      */
     protected function validationTest(
         string $rule,
@@ -58,13 +72,15 @@ abstract class TestCase extends BaseTestCase
         array $replaces = [],
         string $method = 'post',
     ): void {
-        if ($method !== 'post') {
-            throw new UnitException('Param $method not implemented');
-        }
+        $request = match ($method) {
+            'get' => $this->getJson($url, $body),
+            'put' => $this->putJson($url, $body),
+            'post' => $this->postJson($url, $body),
+            default => throw new Exception('Не поддерживаемый метод запроса'),
+        };
 
         $replaces = array_merge(['attribute' => $attribute], $replaces);
 
-        $request = $this->postJson($url, $body);
         $request->assertStatus(422)
             ->assertJsonFragment([
                 'errors' => [

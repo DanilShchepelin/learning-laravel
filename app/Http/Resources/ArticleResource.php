@@ -26,7 +26,7 @@ class ArticleResource extends Resource
             'announcement' => $this->announcement,
             'slug' => $this->slug,
 //            'author' => new UserResource($this->whenLoaded('author'), self::FULL_FORM),
-            'author' => new UserResource($this->whenLoaded('author')),
+            'author' => UserResource::make($this->whenLoaded('author')),
             'categories' => CategoryResource::collection($this->whenLoaded('categories')),
         ];
     }

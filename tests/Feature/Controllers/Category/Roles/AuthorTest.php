@@ -6,21 +6,22 @@ use App\Enums\Roles;
 use App\Models\Category;
 use App\Models\User;
 use Exception;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\CreatesRegularExpressionRouteConstraints;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AuthorTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @return void
      * @throws Exception
      */
     public function testCanAuthorStore(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::AUTHOR]),
-            Roles::getAbilities(Roles::AUTHOR)
-        );
+        $this->actingAsAuthor();
 
         $category = Category::factory()->make();
 
@@ -36,12 +37,9 @@ class AuthorTest extends TestCase
      */
     public function testCanAuthorUpdate(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::AUTHOR]),
-            Roles::getAbilities(Roles::AUTHOR)
-        );
+        $this->actingAsAuthor();
 
-        $category = Category::factory()->create(['title' => 'Hello']);
+        $category = Category::factory()->create();
 
         $response = $this->post("/api/categories/{$category->id}", ['title' => 'hello2']);
 
@@ -55,10 +53,7 @@ class AuthorTest extends TestCase
      */
     public function testCanAuthorDestroy(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::AUTHOR]),
-            Roles::getAbilities(Roles::AUTHOR)
-        );
+        $this->actingAsAuthor();
 
         $category = Category::factory()->create();
 

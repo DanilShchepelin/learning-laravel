@@ -127,9 +127,4 @@ class User extends Authenticatable implements HasMedia
     {
         return $this->role === Roles::ADMIN;
     }
-
-    public function isAuthor(): bool
-    {
-        return $this->role === Roles::AUTHOR;
-    }
 }

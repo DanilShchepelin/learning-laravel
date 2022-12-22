@@ -6,11 +6,14 @@ use App\Enums\Roles;
 use App\Models\Category;
 use App\Models\User;
 use Exception;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AdminTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @return void
      * @throws Exception
@@ -34,7 +37,7 @@ class AdminTest extends TestCase
     {
         $this->actingAsAdmin();
 
-        $category = Category::factory()->create(['title' => 'Hello']);
+        $category = Category::factory()->create();
 
         $response = $this->post("/api/categories/{$category->id}", ['title' => 'hello2']);
 

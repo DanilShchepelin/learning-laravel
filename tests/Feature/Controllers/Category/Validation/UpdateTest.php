@@ -2,17 +2,16 @@
 
 namespace Tests\Feature\Controllers\Category\Validation;
 
-use App\Enums\Roles;
 use App\Models\Category;
-use App\Models\User;
 use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
 {
     use RefreshDatabase;
+    use WithFaker;
 
     /**
      * @return void
@@ -63,6 +62,26 @@ class UpdateTest extends TestCase
      * @return void
      * @throws Exception
      */
+    public function testMaxFieldTitle(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin();
+        $this->validationTest(
+            'max.string',
+            "/api/categories/{$category->id}",
+            [
+                'title' => $this->faker->realTextBetween(256, 270),
+                'description' => $this->faker->text
+            ],
+            'title',
+            ['max' => 255]
+        );
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
     public function testDescriptionCantBeNull(): void
     {
         $category = Category::factory()->create();
@@ -75,6 +94,26 @@ class UpdateTest extends TestCase
         $category->refresh();
 
         $this->assertNotEquals(null, $category->description);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testMaxFieldDescription(): void
+    {
+        $category = Category::factory()->create();
+        $this->actingAsAdmin();
+        $this->validationTest(
+            'max.string',
+            "/api/categories/{$category->id}",
+            [
+                'title' => $this->faker->title,
+                'description' => $this->faker->realTextBetween(65536, 65570)
+            ],
+            'description',
+            ['max' => 65535]
+        );
     }
 
     /**
@@ -117,5 +156,24 @@ class UpdateTest extends TestCase
         $category->refresh();
 
         $this->assertNotEquals(999, $category->parent_id);
+    }
+
+    /**
+     * @return void
+     * @throws Exception
+     */
+    public function testParentIdCanBeNull(): void
+    {
+        $this->actingAsAdmin();
+        $parent = Category::factory()->create();
+        $category = Category::factory()->create(['parent_id' => $parent->id]);
+
+        $this
+            ->postJson("/api/categories/{$category->id}", ['parent_id' => null])
+            ->assertStatus(200);
+
+        $category->refresh();
+
+        $this->assertTrue($category->parent_id === null);
     }
 }

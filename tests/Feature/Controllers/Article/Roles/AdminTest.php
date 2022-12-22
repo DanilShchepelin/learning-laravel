@@ -6,23 +6,34 @@ use App\Enums\Roles;
 use App\Models\Article;
 use App\Models\User;
 use Exception;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AdminTest extends TestCase
 {
+    use RefreshDatabase;
+    use WithFaker;
+// todo Проверить почему не работает подвязка автора
     /**
      * @return void
      * @throws Exception
      */
     public function testStore(): void
     {
-        $this->actingAsAdmin();
-        $article = Article::factory()->make();
+        User::factory(4)->create();
+        $user_id = $this->actingAsAdmin();
+        $article = [
+            'title' => $this->faker->title,
+            'text' => $this->faker->text
+        ];
 
-        $this
-            ->post('/api/articles', $article->toArray())
+        $response = $this
+            ->post('/api/articles', $article)
             ->assertStatus(201);
+
+        $this->assertEquals($user_id, $response['article']['author_id']);
     }
 
     /**
@@ -31,11 +42,10 @@ class AdminTest extends TestCase
      */
     public function testUpdate(): void
     {
-        $this->actingAsAdmin();
+        $user_id = $this->actingAsAdmin();
+        $article = Article::factory()->create(['author_id' => $user_id]);
 
-        $article = Article::factory()->create(['title' => 'Hello']);
-
-        $response = $this->post("/api/articles/{$article->id}", ['title' => 'Hello2']);
+        $response = $this->postJson("/api/articles/{$article->id}", ['title' => 'Hello2']);
 
         $response
             ->assertJsonFragment(['title' => 'Hello2'])
@@ -48,9 +58,9 @@ class AdminTest extends TestCase
      */
     public function testDestroy(): void
     {
-        $this->actingAsAdmin();
+        $user_id = $this->actingAsAdmin();
 
-        $article = Article::factory()->create();
+        $article = Article::factory()->create(['author_id' => $user_id]);
 
         $response = $this->delete("/api/articles/{$article->id}");
 

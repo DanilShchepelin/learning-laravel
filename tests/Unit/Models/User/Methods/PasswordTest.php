@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
-class HashPasswordTest extends TestCase // todo назвать чтобы было понятно какой метод тестируется
+class PasswordTest extends TestCase
 {
     /**
      * @return void

@@ -17,7 +17,6 @@ class SlugTest extends TestCase
     {
         $users = User::factory(2)->create(['name' => 'Test']);
 
-        $this->assertEquals('test', $users[0]->slug);
-        $this->assertEquals('test-2', $users[1]->slug);
+        $this->assertNotEquals($users[1]->slug, $users[0]->slug);
     }
 }

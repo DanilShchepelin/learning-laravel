@@ -28,7 +28,7 @@ class UpdateUserRequest extends FormRequest
             'name' => 'max:70|string',
             'email' => 'email|unique:users,email',
             'biography' => 'string|max:255',
-            'image' => 'image|mimes:jpeg,png,jpg,gif,svg',
+            'image' => 'image',
         ];
     }
 }

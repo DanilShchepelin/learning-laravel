@@ -3,6 +3,7 @@
 namespace Tests\Feature\Controllers\User;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -60,14 +61,14 @@ class ControllerTest extends TestCase
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testChangePassword(): void
     {
-        $user = User::factory()->create(['password' => 'password']);
-        Sanctum::actingAs($user);
+        $user_id = $this->actingAsAuthor();
 
         $response = $this
-            ->put("/api/users/{$user->id}/reset-password", ['current_password' => 'password', 'password' => 'Passw0rd']);
+            ->put("/api/users/{$user_id}/reset-password", ['current_password' => 'password', 'password' => 'Passw0rd']);
 
         $response
             ->assertStatus(200);
@@ -75,13 +76,13 @@ class ControllerTest extends TestCase
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testUpdate(): void
     {
-        $user = User::factory()->create(['name' => 'Ivan']);
-        Sanctum::actingAs($user);
+        $user_id = $this->actingAsAuthor();
 
-        $response = $this->post("/api/users/{$user->id}", ['name' => "Danil"]);
+        $response = $this->post("/api/users/{$user_id}", ['name' => "Danil"]);
 
         $response
             ->assertJsonFragment(['name' => 'Danil'])
@@ -90,12 +91,12 @@ class ControllerTest extends TestCase
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testCantUpdateOther(): void
     {
-        $user = User::factory()->create(['name' => 'Ivan']);
         $other = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAsOther();
 
         $this
             ->post("/api/users/{$other->id}", ['name' => "Danil"])
@@ -122,12 +123,12 @@ class ControllerTest extends TestCase
 
     /**
      * @return void
+     * @throws Exception
      */
     public function testCantDestroyOther(): void
     {
-        $user = User::factory()->create();
         $other = User::factory()->create();
-        Sanctum::actingAs($user);
+        $this->actingAsOther();
 
         $response = $this->delete("/api/users/{$other->id}");
 

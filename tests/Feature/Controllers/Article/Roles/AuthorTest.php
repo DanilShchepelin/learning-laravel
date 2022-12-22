@@ -6,27 +6,33 @@ use App\Enums\Roles;
 use App\Models\Article;
 use App\Models\User;
 use Exception;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class AuthorTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * @return void
      * @throws Exception
      */
     public function testStore(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::AUTHOR]),
-            Roles::getAbilities(Roles::AUTHOR)
-        );
+        User::factory(4)->create();
+        $user_id = $this->actingAsAuthor();
 
-        $article = Article::factory()->make();
+        $article = [
+            'title' => $this->faker->title,
+            'text' => $this->faker->text
+        ];
 
-        $this
-            ->postJson('/api/articles', $article->toArray())
+        $response = $this
+            ->postJson('/api/articles', $article)
             ->assertStatus(201);
+
+        $this->assertEquals($user_id, $response['article']['author_id']);
     }
 
     /**
@@ -35,13 +41,9 @@ class AuthorTest extends TestCase
      */
     public function testUpdate(): void
     {
-        $user = User::factory()->create(['role' => Roles::AUTHOR]);
-        Sanctum::actingAs(
-            $user,
-            Roles::getAbilities(Roles::AUTHOR)
-        );
+        $user_id = $this->actingAsAuthor();
 
-        $article = Article::factory()->create(['title' => 'Hello', 'author_id' => $user->id]);
+        $article = Article::factory()->create(['author_id' => $user_id]);
 
         $this->postJson(
             "/api/articles/{$article->id}",
@@ -59,16 +61,14 @@ class AuthorTest extends TestCase
      */
     public function testDestroy(): void
     {
-        $user = User::factory()->create(['role' => Roles::AUTHOR]);
-        Sanctum::actingAs(
-            $user,
-            Roles::getAbilities(Roles::AUTHOR)
-        );
+        $user_id = $this->actingAsAuthor();
 
-        $article = Article::factory()->create(['author_id' => $user->id]);
+        $article = Article::factory()->create(['author_id' => $user_id]);
 
         $this
             ->delete("/api/articles/$article->id")
             ->assertStatus(204);
+
+        $this->assertModelMissing($article);
     }
 }

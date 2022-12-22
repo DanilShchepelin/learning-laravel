@@ -16,7 +16,6 @@ class ArtileCategoryRelationSeeder extends Seeder
      */
     public function run()
     {
-        // для каждой статьи сделать 0-3 категории
         $categories_id = Category::all()->pluck('id');
 
         Article::all()->each(function (Article $article) use ($categories_id) {

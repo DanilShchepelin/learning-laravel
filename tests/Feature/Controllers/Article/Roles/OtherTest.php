@@ -6,19 +6,21 @@ use App\Enums\Roles;
 use App\Models\Article;
 use App\Models\User;
 use Exception;
-use Laravel\Sanctum\Sanctum;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class OtherTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      * @return void
      */
     public function testIndex(): void
     {
-        User::factory(3)->create();
-        Article::factory(10)->create();
+        $user = User::factory()->create();
+        Article::factory(10)->create(['author_id' => $user->id]);
 
         $response = $this->get('/api/articles');
 
@@ -43,9 +45,10 @@ class OtherTest extends TestCase
      */
     public function testShow(): void
     {
-        User::factory()->create();
-        $article = Article::factory()->create();
-        $response = $this->get('/api/articles/' . $article->id);
+        $user = User::factory()->create(['role' => Roles::AUTHOR]);
+        $article = Article::factory()->create(['author_id' => $user->id]);
+
+        $response = $this->get("/api/articles/{$article->id}");
 
         $response
             ->assertJsonStructure([
@@ -68,11 +71,10 @@ class OtherTest extends TestCase
      */
     public function testStore(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::OTHER]),
-            Roles::getAbilities(Roles::OTHER)
-        );
-        $article = Article::factory()->create();
+        User::factory()->create();
+        $this->actingAsOther();
+
+        $article = Article::factory()->make();
 
         $this
             ->post('/api/articles', $article->toArray())
@@ -86,12 +88,9 @@ class OtherTest extends TestCase
      */
     public function testUpdate(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::OTHER]),
-            Roles::getAbilities(Roles::OTHER)
-        );
-
-        $article = Article::factory()->create(['title' => 'Hello']);
+        $this->actingAsOther();
+        $author = User::factory()->create(['role' => Roles::AUTHOR]);
+        $article = Article::factory()->create(['author_id' => $author->id]);
 
         $this
             ->post("/api/articles/{$article->id}", ['title' => 'Hello2'])
@@ -104,12 +103,9 @@ class OtherTest extends TestCase
      */
     public function testDestroy(): void
     {
-        Sanctum::actingAs(
-            User::factory()->create(['role' => Roles::OTHER]),
-            Roles::getAbilities(Roles::OTHER)
-        );
-
-        $article = Article::factory()->create();
+        $this->actingAsOther();
+        $author = User::factory()->create(['role' => Roles::AUTHOR]);
+        $article = Article::factory()->create(['author_id' => $author->id]);
 
         $this
             ->delete("/api/articles/{$article->id}")
