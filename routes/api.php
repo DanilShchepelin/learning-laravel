@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\Article\Collection as ArticleCollection;
+use App\Http\Controllers\Article\GetList as ArticleCollection;
 use App\Http\Controllers\Article\Delete as ArticleDelete;
-use App\Http\Controllers\Article\Detail as ArticleDetail;
+use App\Http\Controllers\Article\GetItem as ArticleDetail;
 use App\Http\Controllers\Article\Store as ArticleStore;
 use App\Http\Controllers\Article\Update as ArticleUpdate;
 use App\Http\Controllers\Authentication\Login;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Me;
 use App\Http\Controllers\Authentication\Registration;
-use App\Http\Controllers\Category\Collection as CategoryCollection;
+use App\Http\Controllers\Category\GetList as CategoryCollection;
 use App\Http\Controllers\Category\Delete as CategoryDelete;
-use App\Http\Controllers\Category\Detail as CategoryDetail;
+use App\Http\Controllers\Category\GetItem as CategoryDetail;
 use App\Http\Controllers\Category\Store as CategoryStore;
 use App\Http\Controllers\Category\Update as CategoryUpdate;
-use App\Http\Controllers\User\Collection as UserCollection;
+use App\Http\Controllers\User\GetList as UserCollection;
 use App\Http\Controllers\User\Delete as UserDelete;
-use App\Http\Controllers\User\Detail as UserDetail;
+use App\Http\Controllers\User\GetItem as UserDetail;
 use App\Http\Controllers\User\ChangePassword;
 use App\Http\Controllers\User\Update as UserUpdate;
 use Illuminate\Support\Facades\Route;

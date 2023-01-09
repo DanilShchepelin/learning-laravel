@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 
-class Detail extends Controller
+class GetItem extends Controller
 {
     public function __invoke(Category $category): CategoryResource
     {

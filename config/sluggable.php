@@ -83,11 +83,11 @@ return [
      * If you are enforcing unique slugs, the default is to add an
      * incremental value to the end of the base slug.  Alternatively, you
      * can change this value to a closure that accepts three parameters:
-     * the base slug, the separator, and a Collection of the other
+     * the base slug, the separator, and a GetList of the other
      * "similar" slugs.  The closure should return the new unique
      * suffix to append to the slug.
      */
-    
+
     'uniqueSuffix' => null,
 
     /**
@@ -146,7 +146,7 @@ return [
      * is probably not a good idea from an SEO point of view.
      * Only set this to true if you understand the possible consequences.
      */
-    
+
     'onUpdate' => false,
 
     /**

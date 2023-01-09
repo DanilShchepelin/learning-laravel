@@ -7,7 +7,7 @@ use App\Http\Resources\ArticleCollection;
 use App\Models\Article;
 use Illuminate\Http\Request;
 
-class Collection extends Controller
+class GetList extends Controller
 {
     public function __invoke(Request $request): ArticleCollection
     {

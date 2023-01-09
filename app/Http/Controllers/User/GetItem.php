@@ -5,7 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 
-class Detail extends \App\Http\Controllers\Controller
+class GetItem extends \App\Http\Controllers\Controller
 {
     /**
      * Display the specified resource.

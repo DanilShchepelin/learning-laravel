@@ -7,7 +7,7 @@ use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class Collection extends Controller
+class GetList extends Controller
 {
     /**
      * Display a listing of the resource.

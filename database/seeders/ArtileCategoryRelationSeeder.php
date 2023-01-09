@@ -8,7 +8,7 @@ use Illuminate\Database\Seeder;
 
 class ArtileCategoryRelationSeeder extends Seeder
 {
-//    public static ?Collection $categories_id = null;
+//    public static ?GetList $categories_id = null;
     /**
      * Run the database seeds.
      *

@@ -7,7 +7,7 @@ use App\Http\Requests\Article\ShowArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 
-class Detail extends Controller
+class GetItem extends Controller
 {
     public function __invoke(Article $article, ShowArticleRequest $request): ArticleResource
     {

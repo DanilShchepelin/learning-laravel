@@ -8,7 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-class Collection extends Controller
+class GetList extends Controller
 {
     public function __invoke(Request $request): AnonymousResourceCollection
     {
