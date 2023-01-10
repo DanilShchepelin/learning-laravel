@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use Exception;
 
-abstract class Roles
+class Roles
 {
     public const ADMIN = 'admin';
     public const AUTHOR = 'author';
@@ -15,6 +15,11 @@ abstract class Roles
         self::AUTHOR,
         self::OTHER,
     ];
+
+    private function __construct()
+    {
+    }
+
 
     /**
      * @param string $role
@@ -34,14 +39,14 @@ abstract class Roles
         };
     }
 
-    private static function isValid(string $role): bool
-    {
-        return in_array($role, self::OPTIONS);
-    }
-
     private static function isNotValid(string $role): bool
     {
         return !self::isValid($role);
+    }
+
+    private static function isValid(string $role): bool
+    {
+        return in_array($role, self::OPTIONS);
     }
 
 }

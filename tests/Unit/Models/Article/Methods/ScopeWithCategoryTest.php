@@ -29,8 +29,8 @@ class ScopeWithCategoryTest extends TestCase
             $found_category_id = $categories->pivot->category_id;
         }
 
-        $this->assertEmpty($found_category_id);
-        $this->assertEmpty($found_article);
+        $this->assertNotEmpty($found_category_id);
+        $this->assertNotEmpty($found_article);
         $this->assertEquals($found_article->id, $article->id);
         $this->assertEquals($found_category_id, $category->id);
     }
