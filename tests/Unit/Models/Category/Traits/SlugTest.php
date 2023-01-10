@@ -17,6 +17,6 @@ class SlugTest extends TestCase
     {
         $categories = Category::factory(2)->create(['title' => 'Test']);
 
-        $this->assertNotEquals($categories[1]->slug, $categories[0]->slug);
+        $this->assertNotEquals($categories->first()->slug, $categories->last()->slug);
     }
 }
