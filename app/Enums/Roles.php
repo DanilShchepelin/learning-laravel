@@ -4,7 +4,7 @@ namespace App\Enums;
 
 use Exception;
 
-class Roles
+final class Roles
 {
     public const ADMIN = 'admin';
     public const AUTHOR = 'author';
